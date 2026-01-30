@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>São Bernardo RP | VIP Casino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #f0b90b;
+            --bg-dark: #0b0e11;
+            --bg-card: #1e232b;
+            --green: #2ebd85;
+            --red: #f6465d;
+            --text-gray: #848e9c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background: var(--bg-dark); color: #fff; overflow: hidden; height: 100vh; }
+
+        /* Utilitários */
+        .hidden { display: none !important; }
+        .gold-text { color: var(--gold); }
+
+        /* Login Screen */
+        #auth-screen {
+            position: fixed; inset: 0; background: radial-gradient(circle, #1a1e26, #000);
+            display: flex; align-items: center; justify-content: center; z-index: 999;
+        }
+        .auth-card {
+            background: var(--bg-card); padding: 50px; border-radius: 20px;
+            border: 1px solid var(--gold); text-align: center; width: 400px;
+            box-shadow: 0 0 50px rgba(240, 185, 11, 0.15);
+        }
+
+        /* Layout */
+        header {
+            height: 70px; background: #151921; border-bottom: 1px solid #2b3139;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
+        }
+        .balance-box {
+            background: rgba(46, 189, 133, 0.1); border: 1px solid var(--green);
+            padding: 8px 20px; border-radius: 8px; font-weight: 900; color: var(--green);
+        }
+        .app-container { display: flex; height: calc(100vh - 70px); }
+
+        /* Sidebar */
+        nav { width: 260px; background: #151921; padding: 20px; border-right: 1px solid #2b3139; }
+        .nav-item {
+            width: 100%; background: none; border: none; color: var(--text-gray);
+            text-align: left; padding: 15px; cursor: pointer; font-weight: bold;
+            border-radius: 10px; transition: 0.2s; margin-bottom: 5px;
+        }
+        .nav-item:hover, .nav-item.active { background: #2b3139; color: var(--gold); }
+
+        /* Content Area */
+        main { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg-dark); }
+        .game-wrapper { max-width: 800px; margin: auto; }
+
+        /* Game Cards */
+        .card-game { background: var(--bg-card); padding: 30px; border-radius: 20px; text-align: center; }
+        input {
+            width: 100%; padding: 15px; margin: 15px 0; background: #000;
+            border: 1px solid #333; color: #fff; border-radius: 10px; outline: none; text-align: center;
+        }
+        .play-btn {
+            width: 100%; padding: 18px; background: var(--gold); border: none;
+            border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase;
+        }
+
+        /* Grid Mines */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 25px 0; }
+        .tile {
+            aspect-ratio: 1; background: #2b3139; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 24px; transition: 0.2s;
+        }
+        .tile:hover { background: #3a4452; transform: scale(1.05); }
+
+        /* Lobby */
+        .lobby-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .lobby-card {
+            background: var(--bg-card); padding: 40px; border-radius: 20px;
+            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
+        }
+        .lobby-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+
+        footer { font-size: 10px; color: var(--text-gray); margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h1 class="gold-text">SÃO BERNARDO RP</h1>
+            <p style="margin-bottom: 25px; font-size: 14px;">PREMIUM BETTING SYSTEM</p>
+            <input type="text" id="nickInput" placeholder="NICK / PASSAPORTE">
+            <button class="play-btn" onclick="Engine.init()">ENTRAR NO CASSINO</button>
+            <footer>DESENVOLVIDO POR: VHXPRIME</footer>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <header>
+            <div style="font-weight: 900; letter-spacing: 2px;">🎰 <span class="gold-text">SB-CASINO</span></div>
+            <div style="display: flex; align-items: center; gap: 25px;">
+                <span id="user-display" style="font-weight: bold; font-size: 14px;"></span>
+                <div class="balance-box">R$ <span id="balance-display">0.00</span></div>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <nav>
+                <button class="nav-item active" onclick="Engine.route('lobby')">🏠 LOBBY</button>
+                <p style="font-size: 10px; color: var(--text-gray); margin: 20px 0 10px 15px;">ORIGINAIS</p>
+                <button class="nav-item" onclick="Engine.route('mines')">💣 MINES</button>
+                <button class="nav-item" onclick="Engine.route('crash')">📈 CRASH</button>
+                <button class="nav-item" onclick="Engine.route('aviator')">✈️ AVIATOR</button>
+                <button class="nav-item" onclick="Engine.route('double')">🔴 DOUBLE</button>
+                <button class="nav-item" onclick="Engine.reset()" style="color: var(--red); margin-top: 40px;">🔄 RESETAR CONTA</button>
+            </nav>
+
+            <main id="content">
+                </main>
+        </div>
+    </div>
+
+    <script>
+        const Engine = {
+            user: null,
+            saldo: 10.00,
+
+            init() {
+                const nick = document.getElementById('nickInput').value.trim();
+                if (!nick) return alert("Por favor, digite seu Nick!");
+                
+                this.user = nick;
+                const savedBalance = localStorage.getItem(`sb_bet_balance_${nick}`);
+                
+                if (savedBalance) {
+                    this.saldo = parseFloat(savedBalance);
+                } else {
+                    this.save(10.00);
+                }
+
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('user-display').innerText = `USUÁRIO: ${nick.toUpperCase()}`;
+                this.route('lobby');
+                this.updateUI();
+            },
+
+            save(val) {
+                this.saldo = val;
+                localStorage.setItem(`sb_bet_balance_${this.user}`, this.saldo.toFixed(2));
+                this.updateUI();
+            },
+
+            updateUI() {
+                document.getElementById('balance-display').innerText = this.saldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            },
+
+            route(page) {
+                const container = document.getElementById('content');
+                document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+                const views = {
+                    lobby: `
+                        <h1 style="margin-bottom: 30px;">Bem-vindo ao Cassino, <span class="gold-text">${this.user}</span>!</h1>
+                        <div class="lobby-grid">
+                            <div class="lobby-card" onclick="Engine.route('mines')"><h2>💣 MINES</h2><p>Evite as bombas e multiplique.</p></div>
+                            <div class="lobby-card" onclick="Engine.route('crash')"><h2>📈 CRASH</h2><p>Retire antes do gráfico cair.</p></div>
+                        </div>`,
+                    mines: `
+                        <div class="game-wrapper card-game">
+                            <h2>💣 MINES</h2>
+                            <input type="number" id="betMines" placeholder="Valor da Aposta">
+                            <div class="mines-grid">${Array(25).fill().map((_, i) => `<div class="tile" onclick="Engine.playMines(this)">?</div>`).join('')}</div>
+                            <p style="font-size: 12px; color: var(--text-gray);">CREDITS: VHXPRIME</p>
+                        </div>`,
+                    crash: `
+                        <div class="game-wrapper card-game">
+                            <h2>📈 CRASH</h2>
+                            <input type="number" id="betCrash" placeholder="Aposta">
+                            <input type="number" id="target" step="0.1" placeholder="Cashout Alvo (Ex: 2.0)">
+                            <button class="play-btn" onclick="Engine.playCrash()">INICIAR GRÁFICO</button>
+                        </div>`,
+                    aviator: `
+                        <div class="game-wrapper card-game">
+                            <h2>✈️ AVIATOR</h2>
+                            <input type="number" id="betAviator" placeholder="Aposta">
+                            <button class="play-btn" onclick="Engine.playAviator()">DECOLAR</button>
+                        </div>`,
+                    double: `
+                        <div class="game-wrapper card-game">
+                            <h2>🔴 DOUBLE</h2>
+                            <input type="number" id="betDouble" placeholder="Aposta">
+                            <select id="colorSelect" style="width:100%; padding:15px; background:#000; color:#fff; border:1px solid #333; border-radius:10px; margin-bottom:15px;">
+                                <option value="red">VERMELHO (2x)</option>
+                                <option value="black">PRETO (2x)</option>
+                                <option value="white">BRANCO (14x)</option>
+                            </select>
+                            <button class="play-btn" onclick="Engine.playDouble()">GIRAR</button>
+                        </div>`
+                };
+
+                container.innerHTML = views[page];
+            },
+
+            // LÓGICA VICIADA E FUNCIONAL
+            checkBet(amt) {
+                if (isNaN(amt) || amt <= 0 || amt > this.saldo) {
+                    alert("Aposta Inválida ou Saldo Insuficiente!");
+                    return false;
+                }
+                return true;
+            },
+
+            playMines(el) {
+                const bet = parseFloat(document.getElementById('betMines').value);
+                if (!this.checkBet(bet)) return;
+
+                this.saldo -= bet;
+                // Dificuldade dinâmica: Se o saldo for alto, 80% de chance de perder
+                const winChance = this.saldo > 40 ? 0.2 : 0.4;
+
+                if (Math.random() < winChance) {
+                    const win = bet * 2.1;
+                    this.saldo += win;
+                    el.style.backgroundColor = "var(--green)";
+                    el.innerText = "💎";
+                    alert(`GANHOU R$ ${win.toFixed(2)}`);
+                } else {
+                    el.style.backgroundColor = "var(--red)";
+                    el.innerText = "💣";
+                    alert("EXPLODIU!");
+                }
+                this.save(this.saldo);
+                setTimeout(() => this.route('mines'), 1500);
+            },
+
+            playCrash() {
+                const bet = parseFloat(document.getElementById('betCrash').value);
+                const target = parseFloat(document.getElementById('target').value);
+                if (!this.checkBet(bet) || isNaN(target)) return;
+
+                this.saldo -= bet;
+                const crashPoint = Math.random() * (this.saldo > 20 ? 1.8 : 5);
+                
+                if (target <= crashPoint) {
+                    const win = bet * target;
+                    this.saldo += win;
+                    alert(`VITÓRIA! O gráfico subiu até ${crashPoint.toFixed(2)}x`);
+                } else {
+                    alert(`Crashed em ${crashPoint.toFixed(2)}x`);
+                }
+                this.save(this.saldo);
+            },
+
+            playAviator() {
+                const bet = parseFloat(document.getElementById('betAviator').value);
+                if (!this.checkBet(bet)) return;
+                this.saldo -= bet;
+                if (Math.random() > 0.7) {
+                    this.saldo += bet * 2;
+                    alert("O avião voou longe! 2x");
+                } else {
+                    alert("O avião voou para longe precocemente...");
+                }
+                this.save(this.saldo);
+            },
+
+            playDouble() {
+                const bet = parseFloat(document.getElementById('betDouble').value);
+                const choice = document.getElementById('colorSelect').value;
+                if (!this.checkBet(bet)) return;
+                this.saldo -= bet;
+                const seed = Math.random();
+                let result = seed < 0.05 ? 'white' : (seed < 0.52 ? 'red' : 'black');
+                
+                if (choice === result) {
+                    const mult = result === 'white' ? 14 : 2;
+                    this.saldo += bet * mult;
+                    alert(`CAIU NO ${result.toUpperCase()}! GANHOU!`);
+                } else {
+                    alert(`CAIU NO ${result.toUpperCase()}. PERDEU!`);
+                }
+                this.save(this.saldo);
+            },
+
+            reset() {
+                if (confirm("Resetar saldo para R$ 10.00?")) {
+                    this.save(10.00);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
